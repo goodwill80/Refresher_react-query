@@ -1,19 +1,10 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import customFetch from './util';
+import { useDeleteTask, useEditTask } from './reactQueryCustomHooks';
 
 const SingleItem = ({ item }) => {
-  const queryClient = useQueryClient();
-  const { mutate: editTask } = useMutation({
-    mutationFn: ({ taskId, isDone }) => {
-      return customFetch.patch(`/${taskId}`, { isDone });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+  // Edit Task
+  const { editTask } = useEditTask();
+  // Delete Task
+  const { deleteTask, deleteTaskLoading } = useDeleteTask();
 
   return (
     <div className="single-item">
@@ -33,7 +24,8 @@ const SingleItem = ({ item }) => {
       <button
         className="btn remove-btn"
         type="button"
-        onClick={() => console.log('delete task')}
+        disabled={deleteTaskLoading}
+        onClick={() => deleteTask({ taskId: item.id })}
       >
         delete
       </button>
